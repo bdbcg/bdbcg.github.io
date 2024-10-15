@@ -5,6 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FMS - Batalha do Bacurau</title>
   <style>
+    .container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #4CAF50;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .label {
+      font-size: 16px;
+    }
     body {
       font-family: 'Arial', sans-serif;
       display: flex;
@@ -70,7 +124,37 @@
 <button id="pause" onclick="pauseCountdown()">Pausar</button>
 <button id="reset" onclick="resetCountdown()">Zerar</button>
 
+<h2>Escolha o Modo</h2>
+
+<div class="container">
+  <span class="label">Modo Normal</span>
+
+  <label class="switch">
+    <input type="checkbox" id="modeSwitch" onchange="updateMode()">
+    <span class="slider"></span>
+  </label>
+
+  <span class="label">Modo Hard</span>
+</div>
+
+<p id="currentMode">Modo atual: <strong>normal</strong></p>
 <script>
+  let mode = 'Normal';
+  let toModByMode = 10;
+
+  function updateMode() {
+    const switchElement = document.getElementById('modeSwitch');
+    mode = switchElement.checked ? 'Hard' : 'Normal';
+    if (switchElement.checked) {
+      mode = 'Hard';
+      toModByMode = 5;
+    } else {
+      mode = 'Normal';
+      toModByMode = 10;
+    }
+    document.getElementById('currentMode').innerHTML = `Modo atual: <strong>${mode}</strong>`;
+    console.log(`Modo alterado para: ${mode}`);
+  }
   let timer;
   let secondsRemaining = 60;
   const dataset = [
@@ -1475,7 +1559,7 @@ let words = [...new Set(dataset)];
   }
 
   function updateWord() {
-    if (secondsRemaining != 0 && secondsRemaining % 10 === 0) {
+    if (secondsRemaining != 0 && secondsRemaining % toModByMode === 0) {
       const randomIndex = Math.floor(Math.random() * words.length);
       document.getElementById('word').innerText = words[randomIndex].toUpperCase();
       words.splice(randomIndex, 1);
